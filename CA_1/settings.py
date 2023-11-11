@@ -26,6 +26,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['seanbreen.eu', 'localhost', '127.0.0.1', 'www.seanbreen.eu', '100.25.9.0']
 
+CSRF_TRUSTED_ORIGINS = ['https://seanbreen.eu', 'https://www.seanbreen.eu']
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+SECURE_SSL_REDIRECT = True
+
 # Application definition
 
 INSTALLED_APPS = [
