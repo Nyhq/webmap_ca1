@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>{{ trail.name }}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{% static 'leaflet/leaflet.css' %}" />
+
+     <style>
+       #map {
+    height: 300px; /* Adjust the height as needed */
+}
+    </style>
+   </head>
+   <body>
+      <!-- Navigation Bar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+         <a class="navbar-brand" href="{% url 'trail_list' %}">Trail Explorer</a>
+         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+         <span class="navbar-toggler-icon"></span>
+         </button>
+         <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+               {% if user.is_authenticated %}
+               <li class="nav-item">
+                  <span class="navbar-text">Welcome, {{ user.username }}!</span>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+               </li>
+               {% else %}
+               <li class="nav-item">
+                  <a class="nav-link" href="{% url 'login' %}">Login</a>
+               </li>
+               {% endif %}
+            </ul>
+         </div>
+      </nav>
+      <!-- Trail Details -->
+     <div class="container mt-4">
+    <div class="card mb-4 map-card"> <!-- Add the "map-card" class to the card -->
+        <div class="card-body">
+            <h5 class="card-title">{{ trail.name }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Length: {{ trail.length }} km</h6>
+            <p class="card-text">{{ trail.description }}</p>
+            <!-- Map Container -->
+            <div id="map"></div>
+            <!-- Leaflet Map Script -->
+            <script src="{% static 'leaflet/leaflet.js' %}"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const map = L.map('map').setView([40.768, -73.973], 13); // Adjust as needed
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        attribution: '© OpenStreetMap contributors'
+                    }).addTo(map);
+
+                    const trail_geojson = {{ trail_geojson|safe }};
+                    const trailLayer = L.geoJSON(trail_geojson, {
+                        onEachFeature: function (feature, layer) {
+                            console.log(feature);
+                            if (feature.properties && feature.properties.name) {
+                                layer.bindPopup(feature.properties.name);
+                            }
+                        }
+                    }).addTo(map);
+
+                    map.fitBounds(trailLayer.getBounds());
+                });
+            </script>
+        </div>
+    </div>
+      </div>
+      <!-- Bootstrap and other scripts at the bottom -->
+      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+      <!-- Reviews Section -->
+      <div class="mb-4">
+         <h3>Reviews</h3>
+         {% for review in reviews %}
+         <div class="card mb-2">
+            <div class="card-body">
+               <h6 class="card-subtitle mb-2 text-muted">{{ review.author.username }} - {{ review.created_at|date:"Y-m-d" }}</h6>
+               <p class="card-text">{{ review.comment }}</p>
+               <p>Rating: {{ review.rating }}/5</p>
+            </div>
+         </div>
+         {% empty %}
+         <p>No reviews yet.</p>
+         {% endfor %}
+      </div>
+      <!-- Review Form for Logged-in Users -->
+      {% if user.is_authenticated %}
+      <div class="card">
+         <div class="card-body">
+            <h5 class="card-title">Leave a Review</h5>
+            <form method="post">
+               {% csrf_token %}
+               {{ review_form.as_p }}
+               <button type="submit" class="btn btn-primary">Submit Review</button>
+            </form>
+         </div>
+      </div>
+      {% else %}
+      <p><a href="{% url 'login' %}">Login</a> to leave a review.</p>
+      {% endif %}
+      <!-- Back to List Button -->
+      <a href="{% url 'trail_list' %}" class="btn btn-primary mt-3">Back to Trail List</a>
+      <!-- Existing JavaScript for the map -->
+      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+   </body>
+</html>
