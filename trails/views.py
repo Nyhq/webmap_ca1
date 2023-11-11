@@ -20,7 +20,6 @@ def trail_list(request):
     })
 
 
-@login_required
 def trail_detail(request, pk):
     trail = get_object_or_404(Trail, pk=pk)
     reviews = Review.objects.filter(trail=trail)
