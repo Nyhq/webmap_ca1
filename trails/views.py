@@ -21,13 +21,13 @@ def trail_list(request):
     if difficulty:
         trails = trails.filter(difficulty=difficulty)
 
-    trails = Trail.objects.all()
-    trails_geojson = serialize('geojson', trails, fields=('name', 'path'))
+    trails_geojson = serialize('geojson', trails, fields=('name', 'path', 'pk'))
 
     return render(request, 'trail_list.html', {
         'trails': trails,
         'trails_geojson': trails_geojson
     })
+
 
 
 def trail_detail(request, pk):

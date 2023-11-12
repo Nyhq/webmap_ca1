@@ -3,6 +3,9 @@
 <html>
 <head>
     <title>Trail List</title>
+    <!-- Leaflet Includes -->
+    <link rel="stylesheet" href="{% static 'leaflet/leaflet.css' %}" />
+    <script src="{% static 'leaflet/leaflet.js' %}"></script>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Custom CSS for Dog Walking Theme -->
@@ -82,14 +85,57 @@
         </div>
 
         <h1>Trail List</h1>
-        <ul class="list-group" id="trailList">
-            {% for trail in trails %}
-                <li class="list-group-item" data-difficulty="{{ trail.difficulty }}" data-name="{{ trail.name|lower }}">
-                    <a href="{% url 'trail_detail' pk=trail.pk %}" class="stretched-link">{{ trail.name }}</a>
-                </li>
-            {% endfor %}
-        </ul>
+       <ul class="list-group" id="trailList">
+    {% for trail in trails %}
+        <li class="list-group-item" data-id="{{ trail.pk }}" onmouseover="highlightTrailOnMap({{ trail.pk }})" onmouseout="resetMapHighlight()">
+            <a href="{% url 'trail_detail' pk=trail.pk %}" class="stretched-link">{{ trail.name }}</a>
+        </li>
+    {% endfor %}
+
+</ul>
+    <div id="map" style="height: 400px;"></div>
     </div>
+
+    <!-- Script for interactive map -->
+    <script>
+
+    // Define functions at the top level so they are globally accessible
+   function highlightTrailOnMap(trailId) {
+    console.log("Attempting to highlight trail with ID:", trailId);
+    if (trailLayers[trailId]) {
+        console.log("Trail found, focusing on ID:", trailId);
+        map.fitBounds(trailLayers[trailId].getBounds());
+    } else {
+        console.log("No trail layer found for ID:", trailId);
+    }
+}
+
+    function resetMapHighlight() {
+        map.setView([53.349805, -6.260310], 13); // Reset to default view
+    }
+
+    var map = L.map('map').setView([53.349805, -6.260310], 13); // Set default view to Ireland
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    var trailLayers = {}; // Store trail layers
+    var trailsGeoJSON = {{ trails_geojson|safe }}; // Parse GeoJSON
+    console.log("GeoJSON Data:", trailsGeoJSON);
+    // Add trails to the map
+    if (trailsGeoJSON && trailsGeoJSON.features) {
+        trailsGeoJSON.features.forEach(function(feature) {
+            var layer = L.geoJSON(feature.geometry).addTo(map);
+            trailLayers[feature.properties.pk] = layer;
+        });
+    } else {
+        console.error('Invalid GeoJSON data');
+    }
+
+</script>
+
+
 
     <!-- Filter & Search Script -->
     <script>
