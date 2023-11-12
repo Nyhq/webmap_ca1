@@ -1,5 +1,5 @@
 from django import forms
-from .models import Review
+from .models import Review, Trail
 
 
 class ReviewForm(forms.ModelForm):
@@ -28,3 +28,19 @@ class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
         fields = ['comment', 'rating']
+
+
+class TrailCreationForm(forms.ModelForm):
+    csv_file = forms.FileField(required=False, help_text="Upload a CSV file with longitude and latitude points.")
+
+    DIFFICULTY_CHOICES = [
+        ('Easy', 'Easy'),
+        ('Medium', 'Medium'),
+        ('Hard', 'Hard'),
+    ]
+
+    difficulty = forms.ChoiceField(choices=DIFFICULTY_CHOICES)
+
+    class Meta:
+        model = Trail
+        fields = ['name', 'description', 'difficulty', 'csv_file']

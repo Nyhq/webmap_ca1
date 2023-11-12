@@ -1,13 +1,15 @@
 import json
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.gis.geos import LineString
 from django.core.serializers import serialize
 from django.shortcuts import render, get_object_or_404
 
-from .forms import ReviewForm
+from .forms import ReviewForm, TrailCreationForm
 from .models import Trail, Review
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
+import csv
 
 
 def trail_list(request):
@@ -22,12 +24,29 @@ def trail_list(request):
         trails = trails.filter(difficulty=difficulty)
 
     trails_geojson = serialize('geojson', trails, fields=('name', 'path', 'pk'))
+    if request.method == 'POST' and request.user.is_superuser:
+        form = TrailCreationForm(request.POST, request.FILES)
+        if form.is_valid():
+            trail = form.save(commit=False)
+            csv_file = form.cleaned_data['csv_file']
+
+            if csv_file:
+                # Read and process CSV file to create LineString
+                coords = []
+                for row in csv.reader(csv_file.read().decode('utf-8').splitlines()):
+                    longitude, latitude = row  # Adjust depending on CSV format
+                    coords.append((float(longitude), float(latitude)))
+                trail.path = LineString(coords)
+
+            trail.save()
+            return redirect('trail_list')
+    else:
+        form = TrailCreationForm()
 
     return render(request, 'trail_list.html', {
         'trails': trails,
         'trails_geojson': trails_geojson
     })
-
 
 
 def trail_detail(request, pk):
