@@ -7,11 +7,11 @@
       <link rel="stylesheet" href="{% static 'leaflet/leaflet.css' %}" />
       <style>
          body {
-         background-color: #f4f4f4; /* Light background */
+         background-color: #f4f4f4;
          font-family: 'Open Sans', sans-serif;
          }
          .navbar {
-         background-color: #4a7c59; /* Nature-inspired green */
+         background-color: #4a7c59;
          }
          .navbar-brand, .navbar-nav .nav-link {
          color: #fff;
@@ -20,33 +20,34 @@
          color: #e2e2e2;
          }
          #map {
-         height: 300px; /
+             height: 300px;
+         }
          .map-card {
          margin-bottom: 20px;
          }
          .card-body {
-         background-color: #f8f9fa; /* Light grey background for the card */
+         background-color: #f8f9fa;
          }
          .review-card {
-         background-color: #ffffff; /* White background for reviews */
+         background-color: #ffffff;
          margin-bottom: 10px;
          }
          .review-form-card {
-         background-color: #f8f9fa; /* Consistent with other cards */
+         background-color: #f8f9fa;
          margin-bottom: 20px;
          }
-         .btn {
-         background-color: #4a7c59; /* Background color */
-         color: #ffffff; /* Text color */
-         border-color: #4a7c59; /* Border color */
+         .btn{
+         background-color: #4a7c59;
+         color: #ffffff;
+         border-color: #4a7c59;
          }
          .btn:hover,
          .btn:focus,
          .btn:active {
-         background-color: #3e634b; /* Slightly darker shade for hover/active states */
+         background-color: #3e634b;
          border-color: #3e634b;
          }
-         }
+
       </style>
    </head>
    <body>
@@ -79,7 +80,7 @@
             <!-- Add the "map-card" class to the card -->
             <div class="card-body">
                <h5 class="card-title">{{ trail.name }}</h5>
-               <h6 class="card-subtitle mb-2 text-muted">Length: {{ trail.length }} km</h6>
+               <h6 class="card-subtitle mb-2 text-muted">Difficulty: {{ trail.difficulty }}</h6>
                <p class="card-text">{{ trail.description }}</p>
                <!-- Map Container -->
                <div id="map"></div>

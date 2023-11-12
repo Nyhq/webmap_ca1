@@ -2,20 +2,20 @@
 <!DOCTYPE html>
 <html>
    <head>
-      <title>Trail List</title>
+      <title>Dog Walking Trails</title>
       <!-- Leaflet Includes -->
       <link rel="stylesheet" href="{% static 'leaflet/leaflet.css' %}" />
       <script src="{% static 'leaflet/leaflet.js' %}"></script>
       <!-- Bootstrap CSS -->
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-      <!-- Custom CSS for Dog Walking Theme -->
+      <!-- CSS Styling -->
       <style>
          body {
-         background-color: #f4f4f4; /* Light background */
+         background-color: #f4f4f4;
          font-family: 'Open Sans', sans-serif;
          }
          .navbar {
-         background-color: #4a7c59; /* Nature-inspired green */
+         background-color: #4a7c59;
          }
          .navbar-brand, .navbar-nav .nav-link {
          color: #fff;
@@ -32,22 +32,28 @@
          border: none;
          border-radius: 10px;
          margin-bottom: 10px;
-         background-color: #eaeaea; /* Light grey */
+         background-color: #eaeaea;
          }
          .list-group-item:hover {
-         background-color: #d0e0d8; /* Light green */
+         background-color: #d0e0d8;
          }
          #difficultyFilter, #searchQuery {
          padding: 5px 10px;
          border-radius: 5px;
          border: 1px solid #ccc;
          }
+
+           .btn {
+             background-color: #4a7c59;
+             color: #ffffff;
+             border-color: #4a7c59;
+         }
       </style>
    </head>
    <body>
       <!-- Navigation Bar -->
       <nav class="navbar navbar-expand-lg navbar-light">
-         <a class="navbar-brand" href="{% url 'trail_list' %}">Trail Explorer</a>
+         <a class="navbar-brand" href="{% url 'trail_list' %}">Dog Trail Explorer</a>
          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
          <span class="navbar-toggler-icon"></span>
          </button>
@@ -84,16 +90,56 @@
          <h1>Trail List</h1>
          <ul class="list-group" id="trailList">
             {% for trail in trails %}
-            <li class="list-group-item" data-id="{{ trail.pk }}" onmouseover="highlightTrailOnMap({{ trail.pk }})" onmouseout="resetMapHighlight()">
-               <a href="{% url 'trail_detail' pk=trail.pk %}" class="stretched-link">{{ trail.name }}</a>
-            </li>
-            {% endfor %}
+<li class="list-group-item"
+    data-id="{{ trail.pk }}"
+    data-difficulty="{{ trail.difficulty }}"
+    data-name="{{ trail.name|lower }}"
+    onmouseover="highlightTrailOnMap({{ trail.pk }})"
+    onmouseout="resetMapHighlight()">
+    <a href="{% url 'trail_detail' pk=trail.pk %}" class="stretched-link">{{ trail.name }}</a>
+</li>
+{% endfor %}
          </ul>
          <div id="map" style="height: 400px;"></div>
       </div>
+
+       {% if user.is_superuser %}
+<div class="trail-creation-form">
+    <h2>Create New Trail</h2>
+    <form method="post" enctype="multipart/form-data" id="trailCreationForm">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="id_name">Trail Name:</label>
+            <input type="text" class="form-control" id="id_name" name="name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="id_description">Description:</label>
+            <textarea class="form-control" id="id_description" name="description" rows="3" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="id_difficulty">Difficulty:</label>
+            <select class="form-control" id="id_difficulty" name="difficulty" required>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="id_csv_file">CSV File:</label>
+            <input type="file" class="form-control" name="csv_file" id="id_csv_file" required>
+            <small class="form-text text-muted">Upload a CSV file with longitude and latitude points.</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create Trail</button>
+    </form>
+</div>
+{% endif %}
       <!-- Script for interactive map -->
       <script>
-         // Define functions at the top level so they are globally accessible
          function highlightTrailOnMap(trailId) {
          console.log("Attempting to highlight trail with ID:", trailId);
          if (trailLayers[trailId]) {
@@ -150,41 +196,7 @@
              }
          }
       </script>
-     {% if user.is_superuser %}
-<div class="trail-creation-form">
-    <h2>Create New Trail</h2>
-    <form method="post" enctype="multipart/form-data" id="trailCreationForm">
-        {% csrf_token %}
 
-        <div class="form-group">
-            <label for="id_name">Trail Name:</label>
-            <input type="text" class="form-control" id="id_name" name="name" required>
-        </div>
-
-        <div class="form-group">
-            <label for="id_description">Description:</label>
-            <textarea class="form-control" id="id_description" name="description" rows="3" required></textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="id_difficulty">Difficulty:</label>
-            <select class="form-control" id="id_difficulty" name="difficulty" required>
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="id_csv_file">CSV File:</label>
-            <input type="file" class="form-control" name="csv_file" id="id_csv_file" required>
-            <small class="form-text text-muted">Upload a CSV file with longitude and latitude points.</small>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Create Trail</button>
-    </form>
-</div>
-{% endif %}
 
       <!-- Bootstrap JS -->
       <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

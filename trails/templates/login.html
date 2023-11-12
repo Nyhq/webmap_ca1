@@ -4,8 +4,9 @@
 <head>
     <title>Login</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Custom styling -->
+    <!-- Css Styling -->
     <style>
+        /* General page styles */
         body {
             background-color: #f4f4f4;
             font-family: 'Open Sans', sans-serif;
@@ -14,6 +15,8 @@
             align-items: center;
             height: 100vh;
         }
+
+        /* Login container styles */
         .login-container {
             background-color: white;
             padding: 20px;
@@ -22,16 +25,17 @@
             width: 300px;
         }
 
-           .btn {
-            background-color: #4a7c59; /* Background color */
-            color: #ffffff; /* Text color */
-            border-color: #4a7c59; /* Border color */
+        /* Button styling */
+        .btn {
+            background-color: #4a7c59; /* Nature-inspired green */
+            color: #ffffff; /* White text */
+            border-color: #4a7c59; /* Matching border color */
         }
 
         .btn:hover,
         .btn:focus,
         .btn:active {
-            background-color: #3e634b; /* Slightly darker shade for hover/active states */
+            background-color: #3e634b; /* Darker green for interaction states */
             border-color: #3e634b;
         }
     </style>
@@ -39,7 +43,7 @@
 <body>
     <div class="login-container">
         <h2 class="text-center">Login</h2>
-        <form method="post">
+        <form method="post" aria-label="Login Form">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-primary btn-block">Login</button>
