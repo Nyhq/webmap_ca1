@@ -33,7 +33,6 @@ def trail_list(request):
 def trail_detail(request, pk):
     trail = get_object_or_404(Trail, pk=pk)
     reviews = Review.objects.filter(trail=trail)
-    new_review = None
 
     # Serialize the trail's path to GeoJSON
     trail_geojson = serialize('geojson', [trail], fields=('name', 'path'))
@@ -48,6 +47,9 @@ def trail_detail(request, pk):
             new_review.trail = trail
             new_review.author = request.user
             new_review.save()
+
+            # Redirect to the same page to prevent duplicate submissions
+            return redirect('trail_detail', pk=trail.pk)
     else:
         review_form = ReviewForm()
 
@@ -55,7 +57,6 @@ def trail_detail(request, pk):
         'trail': trail,
         'trail_geojson': trail_geojson,
         'reviews': reviews,
-        'new_review': new_review,
         'review_form': review_form
     })
 

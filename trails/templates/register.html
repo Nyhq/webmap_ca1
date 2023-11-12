@@ -1,20 +1,51 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>Register</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container mt-5">
-        <h2>Register</h2>
-        <form method="post">
+   <head>
+      <title>Register</title>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+      <!-- Custom styling -->
+      <style>
+         body {
+         background-color: #f4f4f4;
+         font-family: 'Open Sans', sans-serif;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         height: 100vh;
+         }
+         .register-container {
+         background-color: white;
+         padding: 20px;
+         border-radius: 10px;
+         box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+         width: 300px;
+         }
+         .btn {
+         background-color: #4a7c59; /* Background color */
+         color: #ffffff; /* Text color */
+         border-color: #4a7c59; /* Border color */
+         }
+         .btn:hover,
+         .btn:focus,
+         .btn:active {
+         background-color: #3e634b; /* Slightly darker shade for hover/active states */
+         border-color: #3e634b;
+         }
+      </style>
+   </head>
+   <body>
+      <div class="register-container">
+         <h2 class="text-center">Register</h2>
+         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Register</button>
-        </form>
-        <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
-    </div>
-</body>
+            <button type="submit" class="btn btn-primary btn-block">Register</button>
+         </form>
+         <div class="text-center mt-3">
+            <a href="{% url 'login' %}">Already have an account? Login</a>
+         </div>
+      </div>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+   </body>
 </html>

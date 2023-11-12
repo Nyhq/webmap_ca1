@@ -3,11 +3,47 @@
 <html>
 <head>
     <title>Trail List</title>
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Custom CSS for Dog Walking Theme -->
+    <style>
+        body {
+            background-color: #f4f4f4; /* Light background */
+            font-family: 'Open Sans', sans-serif;
+        }
+        .navbar {
+            background-color: #4a7c59; /* Nature-inspired green */
+        }
+        .navbar-brand, .navbar-nav .nav-link {
+            color: #fff;
+        }
+        .navbar-brand:hover, .navbar-nav .nav-link:hover {
+            color: #e2e2e2;
+        }
+        .filter-search-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .list-group-item {
+            border: none;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            background-color: #eaeaea; /* Light grey */
+        }
+        .list-group-item:hover {
+            background-color: #d0e0d8; /* Light green */
+        }
+        #difficultyFilter, #searchQuery {
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <a class="navbar-brand" href="{% url 'trail_list' %}">Trail Explorer</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -30,51 +66,55 @@
         </div>
     </nav>
 
-    <div class="filter-search-bar">
-        <!-- Filter Dropdown -->
-        <select id="difficultyFilter">
-            <option value="">All Difficulties</option>
-            <option value="Easy">Easy</option>
-            <option value="Medium">Medium</option>
-            <option value="Hard">Hard</option>
-        </select>
-
-        <!-- Search Input -->
-        <input type="text" id="searchQuery" placeholder="Search trails...">
-
-        <!-- Filter and Search Buttons -->
-        <button onclick="applyFilter()">Filter</button>
-        <button onclick="applySearch()">Search</button>
-    </div>
-
-    <!-- Filter & Search Script -->
-    <script>
-    function applyFilter() {
-        var difficulty = document.getElementById('difficultyFilter').value;
-        var query = document.getElementById('searchQuery').value;
-        var url = `?difficulty=${difficulty}&query=${query}`;
-        window.location.href = url;
-    }
-
-    function applySearch() {
-        var query = document.getElementById('searchQuery').value;
-        window.location.href = '?query=' + query;
-    }
-</script>
-
-
-    <!-- Trail List -->
+    <!-- Filter & Search Bar -->
     <div class="container mt-4">
+        <div class="filter-search-bar">
+            <!-- Filter Dropdown -->
+            <select id="difficultyFilter" onchange="applyFilter()" class="form-control">
+                <option value="">All Difficulties</option>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+            </select>
+
+            <!-- Search Input -->
+            <input type="text" id="searchQuery" oninput="applyFilter()" placeholder="Search trails..." class="form-control">
+        </div>
+
         <h1>Trail List</h1>
-        <ul class="list-group">
+        <ul class="list-group" id="trailList">
             {% for trail in trails %}
-                <li class="list-group-item">
+                <li class="list-group-item" data-difficulty="{{ trail.difficulty }}" data-name="{{ trail.name|lower }}">
                     <a href="{% url 'trail_detail' pk=trail.pk %}" class="stretched-link">{{ trail.name }}</a>
                 </li>
             {% endfor %}
         </ul>
     </div>
 
+    <!-- Filter & Search Script -->
+    <script>
+        function applyFilter() {
+            var difficultyFilter = document.getElementById('difficultyFilter').value.toLowerCase();
+            var searchQuery = document.getElementById('searchQuery').value.toLowerCase();
+            var trailList = document.getElementById('trailList');
+            var trails = trailList.getElementsByTagName('li');
+
+            for (var i = 0; i < trails.length; i++) {
+                var difficulty = trails[i].getAttribute('data-difficulty').toLowerCase();
+                var name = trails[i].getAttribute('data-name');
+                var isDifficultyMatch = difficultyFilter === '' || difficulty === difficultyFilter;
+                var isSearchMatch = name.includes(searchQuery);
+
+                if (isDifficultyMatch && isSearchMatch) {
+                    trails[i].style.display = '';
+                } else {
+                    trails[i].style.display = 'none';
+                }
+            }
+        }
+    </script>
+
+    <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
