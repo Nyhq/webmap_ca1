@@ -30,6 +30,39 @@
         </div>
     </nav>
 
+    <div class="filter-search-bar">
+        <!-- Filter Dropdown -->
+        <select id="difficultyFilter">
+            <option value="">All Difficulties</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+        </select>
+
+        <!-- Search Input -->
+        <input type="text" id="searchQuery" placeholder="Search trails...">
+
+        <!-- Filter and Search Buttons -->
+        <button onclick="applyFilter()">Filter</button>
+        <button onclick="applySearch()">Search</button>
+    </div>
+
+    <!-- Filter & Search Script -->
+    <script>
+    function applyFilter() {
+        var difficulty = document.getElementById('difficultyFilter').value;
+        var query = document.getElementById('searchQuery').value;
+        var url = `?difficulty=${difficulty}&query=${query}`;
+        window.location.href = url;
+    }
+
+    function applySearch() {
+        var query = document.getElementById('searchQuery').value;
+        window.location.href = '?query=' + query;
+    }
+</script>
+
+
     <!-- Trail List -->
     <div class="container mt-4">
         <h1>Trail List</h1>

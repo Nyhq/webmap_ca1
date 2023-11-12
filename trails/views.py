@@ -11,6 +11,16 @@ from django.shortcuts import render, redirect
 
 
 def trail_list(request):
+    query = request.GET.get('query', '')
+    difficulty = request.GET.get('difficulty', '')
+
+    trails = Trail.objects.all()
+
+    if query:
+        trails = trails.filter(name__icontains=query)
+    if difficulty:
+        trails = trails.filter(difficulty=difficulty)
+
     trails = Trail.objects.all()
     trails_geojson = serialize('geojson', trails, fields=('name', 'path'))
 
